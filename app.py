@@ -82,7 +82,7 @@ if st.button("🔍 Predict", type="primary", use_container_width=True):
         'bl_hbalc':           hba1c,
         'BMI':                bmi,
         'cesd10':             cesd,
-        'cognition_reversed': 21 - cognition,
+        'total_cognition': cognition,
         'MS':                 grip,
         'gender':             0 if gender == "Male" else 1,
         '消化系统疾病':        1 if digest == "Yes" else 0,
@@ -90,7 +90,6 @@ if st.button("🔍 Predict", type="primary", use_container_width=True):
     }
 
     input_df     = pd.DataFrame([input_dict])[FEATURES]
-    st.write("Debug input:", input_dict)
     input_scaled = scaler.transform(input_df)
     prob         = model.predict_proba(input_scaled)[0][1]
 
@@ -126,7 +125,7 @@ if st.button("🔍 Predict", type="primary", use_container_width=True):
 
     m1, m2, m3 = st.columns(3)
     m1.metric("Risk Probability", f"{prob*100:.1f}%")
-    m2.metric("Prediction",       "CMM" if pred == 1 else "No CMM")
+    m2.metric("Prediction", "CMM" if prob >= 0.5 else "No CMM")
     m3.metric("Risk Level",       level)
 
     # Risk gauge
