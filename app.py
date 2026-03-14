@@ -23,9 +23,6 @@ def load_model():
     return model, scaler, features
 
 model, scaler, FEATURES = load_model()
-import os
-st.write(os.path.getmtime("model/svm_model.pkl"))
-
 
 # ── Title ────────────────────────────────────────────────────
 st.markdown("""
@@ -33,6 +30,7 @@ st.markdown("""
         🫀 CMM Risk Prediction Calculator for Elderly Patients with Sarcopenia
     </h2>
     <p style='text-align:center; color:gray; font-size:13px;'>
+        Based on CHARLS 2015 · SVM Model · AUROC 0.803<br>
         ⚠️ For clinical reference only. Not a substitute for professional medical judgment.
     </p>
 """, unsafe_allow_html=True)
@@ -45,11 +43,11 @@ with col1:
     st.markdown("#### 🩺 Physical Examination & Biomarkers")
     systo  = st.number_input("Systolic BP (mmHg)",   60,   260,  130,  step=1)
     weight = st.number_input("Body Weight (kg)",     30.0, 150.0, 60.0, step=0.1)
-    bmi = st.selectbox("BMI Category",
-                       options=[1, 2, 3],
-                       format_func=lambda x: {1: "Normal (BMI 18.5–23.9)",
-                                               2: "Overweight (BMI 24–27.9)",
-                                               3: "Obese (BMI ≥28)"}[x])
+    bmi    = st.selectbox("BMI Category",
+                          options=[2, 3, 4],
+                          format_func=lambda x: {2: "Normal (BMI 18.5–23.9)",
+                                                  3: "Overweight (BMI 24–27.9)",
+                                                  4: "Obese (BMI ≥28)"}[x])
     grip   = st.number_input("Grip Strength (kg)",    0.0,  80.0, 28.0, step=0.1)
     hba1c  = st.number_input("HbA1c (%)",             3.0,  20.0,  6.1, step=0.1)
     cysc   = st.number_input("Cystatin C (mg/L)",     0.3,   5.0, 0.92, step=0.01)
@@ -58,7 +56,7 @@ with col2:
     st.markdown("#### 📋 General Information & Health Status")
     gender    = st.radio("Sex", ["Male", "Female"], horizontal=True)
     cesd      = st.number_input("Depression Score (CESD-10, 0–30)", 0, 30, 8)
-    cognition = st.number_input("Cognitive Score (0–30)",           0, 30, 10)
+    cognition = st.number_input("Cognitive Score (0–21)", 0, 21, 10)
     digest    = st.radio("Digestive System Disease", ["No", "Yes"], horizontal=True)
 
     st.markdown("""
@@ -66,28 +64,29 @@ with col2:
                 font-size:12px; margin-top:16px;'>
     <b>📌 Normal Reference Ranges</b><br>
     Systolic BP: 90–140 mmHg<br>
-    BMI: 1=Normal, 2=Overweight, 3=Obese<br>
+    BMI: Normal / Overweight / Obese<br>
     HbA1c: 4.0–6.0 %<br>
     Cystatin C: 0.51–1.09 mg/L<br>
-    Grip Strength (Male): ≥28 kg &nbsp; (Female): ≥18 kg
+    Grip Strength (Male): ≥28 kg &nbsp; (Female): ≥18 kg<br>
+    Cognitive Score: higher = better
     </div>
     """, unsafe_allow_html=True)
 
-# ── Predict Button ───────────────────────────────────────────
+# ── Predict ──────────────────────────────────────────────────
 st.divider()
 if st.button("🔍 Predict", type="primary", use_container_width=True):
 
     input_dict = {
-        'systo':           systo,
-        'mweight':         weight,
-        'bl_hbalc':        hba1c,
-        'BMI':             bmi,
-        'cesd10':          cesd,
-        'total_cognition': cognition,
-        'MS':              grip,
-        'gender':          0 if gender == "Male" else 1,
-        '消化系统疾病':     1 if digest == "Yes" else 0,
-        'bl_cysc':         cysc,
+        'systo':              systo,
+        'mweight':            weight,
+        'bl_hbalc':           hba1c,
+        'BMI':                bmi,
+        'cesd10':             cesd,
+        'cognition_reversed': 21 - cognition,
+        'MS':                 grip,
+        'gender':             0 if gender == "Male" else 1,
+        '消化系统疾病':        1 if digest == "Yes" else 0,
+        'bl_cysc':            cysc,
     }
 
     input_df     = pd.DataFrame([input_dict])[FEATURES]
@@ -146,4 +145,5 @@ if st.button("🔍 Predict", type="primary", use_container_width=True):
     ax.axis('off')
     ax.set_title("CMM Risk Gauge", fontsize=13, pad=10)
     st.pyplot(fig)
+
     st.caption("⚠️ This tool is intended for Chinese elderly patients (aged ≥60) with confirmed sarcopenia, based on CHARLS 2015 data. It is not applicable to other populations.")
