@@ -141,20 +141,4 @@ if st.button("🔍 Predict", type="primary", use_container_width=True):
     ax.axis('off')
     ax.set_title("CMM Risk Gauge", fontsize=13, pad=10)
     st.pyplot(fig)
-
-    # SHAP bar chart
-    st.markdown("#### 📊 Feature Importance (SHAP, from published model)")
-    shap_labels = ['Systolic BP', 'Body Weight', 'HbA1c', 'BMI', 'Depression Score',
-                   'Cognitive Score', 'Grip Strength', 'Sex (Female)', 'Digestive Disease', 'Cystatin C']
-    shap_values = [0.18, 0.15, 0.13, 0.12, 0.10,
-                   0.09, 0.08, 0.07, 0.06, 0.05]
-
-    fig2, ax2 = plt.subplots(figsize=(7, 4))
-    ax2.barh(shap_labels[::-1], shap_values[::-1], color='#e74c3c', alpha=0.8)
-    ax2.set_xlabel("Relative Importance (SHAP)")
-    ax2.set_title("Feature Contribution to CMM Prediction")
-    for i, val in enumerate(shap_values[::-1]):
-        ax2.text(val + 0.002, i, f'{val:.2f}', va='center', fontsize=9)
-    st.pyplot(fig2)
-
     st.caption("⚠️ This tool is intended for Chinese elderly patients (aged ≥60) with confirmed sarcopenia, based on CHARLS 2015 data. It is not applicable to other populations.")
