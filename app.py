@@ -45,7 +45,11 @@ with col1:
     st.markdown("#### 🩺 Physical Examination & Biomarkers")
     systo  = st.number_input("Systolic BP (mmHg)",   60,   260,  130,  step=1)
     weight = st.number_input("Body Weight (kg)",     30.0, 150.0, 60.0, step=0.1)
-    bmi    = st.number_input("BMI (kg/m²)",          10.0,  50.0, 23.0, step=0.1)
+    bmi = st.selectbox("BMI Category",
+                       options=[1, 2, 3],
+                       format_func=lambda x: {1: "Normal (BMI 18.5–23.9)",
+                                               2: "Overweight (BMI 24–27.9)",
+                                               3: "Obese (BMI ≥28)"}[x])
     grip   = st.number_input("Grip Strength (kg)",    0.0,  80.0, 28.0, step=0.1)
     hba1c  = st.number_input("HbA1c (%)",             3.0,  20.0,  6.1, step=0.1)
     cysc   = st.number_input("Cystatin C (mg/L)",     0.3,   5.0, 0.92, step=0.01)
@@ -62,7 +66,7 @@ with col2:
                 font-size:12px; margin-top:16px;'>
     <b>📌 Normal Reference Ranges</b><br>
     Systolic BP: 90–140 mmHg<br>
-    BMI: 18.5–23.9 kg/m²<br>
+    BMI: 1=Normal, 2=Overweight, 3=Obese<br>
     HbA1c: 4.0–6.0 %<br>
     Cystatin C: 0.51–1.09 mg/L<br>
     Grip Strength (Male): ≥28 kg &nbsp; (Female): ≥18 kg
