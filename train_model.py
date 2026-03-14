@@ -20,14 +20,12 @@ for col in ['消化系统疾病']:
     else:
         df[col] = df[col].astype(int)
 
-# ── 3. 认知评分反向编码（分越高风险越低）────────────────────────
-df['cognition_reversed'] = df['total_cognition'].max() - df['total_cognition']
-
 # ── 4. SHAP Top 10 特征 ──────────────────────────────────────
 FEATURES = [
     'systo', 'mweight', 'bl_hbalc', 'BMI', 'cesd10',
-    'cognition_reversed', 'MS', 'gender', '消化系统疾病', 'bl_cysc'
+    'total_cognition', 'MS', 'gender', '消化系统疾病', 'bl_cysc'
 ]
+
 TARGET = 'cmm'
 
 X = df[FEATURES].copy()
@@ -71,5 +69,21 @@ with open("model/scaler.pkl", "wb") as f:
     pickle.dump(scaler, f)
 with open("model/features.pkl", "wb") as f:
     pickle.dump(FEATURES, f)
+# 测试极端输入
+test_cases = pd.DataFrame([
+    {'systo': 120, 'mweight': 55, 'bl_hbalc': 5.5, 'BMI': 2,
+     'cesd10': 2, 'total_cognition': 20, 'MS': 35,
+     'gender': 0, '消化系统疾病': 0, 'bl_cysc': 0.7},
+    {'systo': 180, 'mweight': 90, 'bl_hbalc': 10, 'BMI': 4,
+     'cesd10': 28, 'total_cognition': 3, 'MS': 10,
+     'gender': 1, '消化系统疾病': 1, 'bl_cysc': 2.5},
+])[FEATURES]
+
+test_scaled = scaler.transform(test_cases)
+test_probs = best_model.predict_proba(test_scaled)[:, 1]
+print(f"低风险测试概率：{test_probs[0]*100:.1f}%")
+print(f"高风险测试概率：{test_probs[1]*100:.1f}%")
+
+print("✅ 模型已保存至 model/ 目录")
 
 print("✅ 模型已保存至 model/ 目录")
