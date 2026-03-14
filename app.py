@@ -31,7 +31,6 @@ st.markdown("""
         🫀 CMM Risk Prediction Calculator for Elderly Patients with Sarcopenia
     </h2>
     <p style='text-align:center; color:gray; font-size:13px;'>
-        Based on CHARLS 2015 · SVM Model · AUROC 0.803<br>
         ⚠️ For clinical reference only. Not a substitute for professional medical judgment.
     </p>
 """, unsafe_allow_html=True)
