@@ -23,6 +23,9 @@ def load_model():
     return model, scaler, features
 
 model, scaler, FEATURES = load_model()
+import os
+st.write(os.path.getmtime("model/svm_model.pkl"))
+
 
 # ── Title ────────────────────────────────────────────────────
 st.markdown("""
