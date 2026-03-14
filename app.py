@@ -13,7 +13,6 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-@st.cache_resource
 def load_model():
     with open("model/svm_model.pkl", "rb") as f:
         model = pickle.load(f)
